@@ -116,6 +116,41 @@ SIP用于建立会话, 经常用于语言通话等等.
 由于服务端端口可以改变,所以没办法拦截.
 ##### 3. 测试
 ###### (1) 部署环境
+```
+1. 通过docker-compose部署SIP服务器:
+使用镜像: sss666/asterisk
+
+$ cat compose.yaml
+version: '3'
+
+services:
+  asterisk:
+    container_name: asterisk
+    image: sss666/asterisk
+    restart:  always
+    ports:
+      - "5060:5060/udp"
+    hostname: asterisk
+    network_mode: "host"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+    # volumes:
+    #   -
+    # command: bash -c 'while true; do sleep 20180101; done'
+
+启动服务:
+docker-compose -f compose.yaml up -d
+
+停止服务:
+docker-compose -f compose.yaml up -v
+
+参考: https://github.com/uohz3/asterisk-docker
+
+2. 客户端: 手机APP(关于VoIP的APP) 
+```
 ##### 4 拓展
 #### 2.6 RTSP ALG
 ##### 1. 原理
