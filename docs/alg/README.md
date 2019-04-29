@@ -13,7 +13,7 @@ FTP在遇到NAT设备事存在的问题主要是当FTP服务器在主动模式�
 NAT设备需要依赖模块: nf_conntrack_ftp nf_nat_ftp
 ###### (2) 拦截
 ```
-1. 卸载这两个模块(nf_conntrack_ftp nf_nat_ftp)后, FTP处于被动模式就无法穿越路由器了;
+1. 卸载这两个模块(nf_conntrack_ftp nf_nat_ftp)后, FTP处于主动模式就无法穿越路由器了;
 2. 由于FTP在被动模式是正常的,所以如果需要进一步拦截FTP被动模式的流量,可以把TCP/21端口的数据包丢掉.
     iptables -I  FORWARD -p tcp --dport 21 -m comment --comment 'Disable-FTP-forward' -j DROP
 ```
@@ -61,7 +61,7 @@ ftp数据目录: /home/vsftpd
 docker-compose -f compose.yaml up -d
 
 停止服务:
-docker-compose -f compose.yaml up -v
+docker-compose -f compose.yaml down -v
 ```
 2. 客户端(Windows环境或者Linux环境)
 [FileZilla免费开源](https://filezilla-project.org/)
@@ -98,9 +98,10 @@ iptables -I FORWARD -p udp -m comment --comment 'Disable-L2TP-PassThrough' --dpo
 [略](#)
 #### 2.4 IPSec ALG
 ##### 1. 原理
+IPsec客户端和服务端可以自己检测出是否存在NAT设备,然后自动调整策略通过NAT, 不需要NAT设备辅助.
 ##### 2. 方案
 ###### (1) 辅助通过
-IPsec客户端和服务端可以自己检测出是否存在NAT设备,然后自动调整策略通过NAT, 不需要NAT设备辅助.
+不需要NAT设备辅助.
 ###### (2) 拦截
 目前没有办法拦截IPSec流量
 ##### 3. 测试
@@ -108,7 +109,7 @@ IPsec客户端和服务端可以自己检测出是否存在NAT设备,然后自�
 ##### 4 拓展
 #### 2.5 SIP ALG
 ##### 1. 原理
-SIP用于建立会话, 经常用于语言通话等等.
+SIP用于建立会话, 经常用于语音通话等等. 在语音通话过程中,SIP协议负责链路协商并建立会话,然后通过RTP传输数据.
 ##### 2. 方案
 ###### (1) 辅助通过
 通过抓包发现, 可以语音数据通过服务器代理进行转发,所以不需要辅助.
@@ -145,7 +146,7 @@ services:
 docker-compose -f compose.yaml up -d
 
 停止服务:
-docker-compose -f compose.yaml up -v
+docker-compose -f compose.yaml down -v
 
 参考: https://github.com/uohz3/asterisk-docker
 
@@ -200,7 +201,7 @@ services:
 docker-compose -f compose.yaml up -d
 
 停止服务:
-docker-compose -f compose.yaml up -v
+docker-compose -f compose.yaml down -v
 
 客户端访问url: rtsp://${IP}:8554/live.sdp
 
@@ -208,3 +209,4 @@ docker-compose -f compose.yaml up -v
 https://www.videolan.org/
 ```
 ##### 4 拓展
+[1. ullaakut/rtspat 镜像](https://hub.docker.com/r/ullaakut/rtspatt)
